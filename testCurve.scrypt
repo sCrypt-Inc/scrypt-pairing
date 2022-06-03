@@ -1,0 +1,32 @@
+import "bn128.scrypt";
+
+
+contract BN128CurveTest {
+
+    public function testAddFQ(PointFQ a, PointFQ b, PointFQ sum) {
+       require(BN128.addPointsFQ(a, b) == sum);
+    }
+
+    public function testDoubleFQ(PointFQ a, PointFQ d) {
+       require(BN128.doublePointFQ(a) == d);
+    }
+
+    public function testMultPointByScalarFQ(PointFQ p, int scalar, PointFQ res) {
+       require(BN128.multPointByScalarFQ(p, scalar) == res);
+    }
+
+    //------------------
+
+    public function testFQ2modInv(int[2] x, int[2] res) {
+       int[2] _res = BN128.modInverseEGCD_FQ2(x);
+       require(_res == res);
+    }
+
+    public function testDoubleFQ2(PointFQ2 a, PointFQ2 d) {
+       //PointFQ2 res = BN128.doublePointFQ2(a);
+       //require(true == true);
+       require(BN128.doublePointFQ2(a) == d);
+    }
+
+}
+

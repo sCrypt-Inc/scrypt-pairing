@@ -1,0 +1,44 @@
+import "bn128.scrypt";
+
+
+library Pairing {
+
+    // Log of ATE_LOOP_COUNT
+    static const int N = 63;
+    static const int ATE_LOOP_COUNT = 29793968203157093288;
+
+    static const bytes mask = reverseBytes(num2bin(1, N), N);
+
+    // Compute the pairing e(Q, P)
+    static function pairing(Point Q, Point P): int {
+        Point R = Q;
+        int f = 1;
+
+        // Main Miller loop
+        loop (N) : i {
+            f = f * f * linefunc(R, R, P);
+            R = EC.doublePoint(R);
+
+            int j = N - 1 - i;
+            if (ATE_LOOP_COUNT & (mask << j)) {
+                f = f * linefunc(R, Q, P);
+                R = EC.addPoints(R, Q);
+            }
+        }
+        return f;
+    }
+
+    // Create a function representing the line between P1 and P2, and evaluate it at T
+    static function linefunc(Point P1, Point P2, Point T): int {
+        int ret = T.x - P1.x;
+
+        if P1.x != P2.x {
+            ret = ((P2.y - P1.y) / (P2.x - P1.x)) * ((T.x - P1.x) / (T.y - P1.y));
+        }
+        if P1.y == P2.y {
+            ret = (3 * (P1.x*P1.x) / (2 * P1.y)) * ((T.x - P1.x) / (T.y - P1.y));
+        }
+
+        return ret;
+    }
+}
