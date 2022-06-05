@@ -22,10 +22,16 @@ contract BN128CurveTest {
        require(_res == res);
     }
 
+    public function testAddFQ2(PointFQ2 a, PointFQ2 b, PointFQ2 sum) {
+       require(BN128.addPointsFQ2(a, b) == sum);
+    }
+
     public function testDoubleFQ2(PointFQ2 a, PointFQ2 d) {
-       //PointFQ2 res = BN128.doublePointFQ2(a);
-       //require(true == true);
        require(BN128.doublePointFQ2(a) == d);
+    }
+
+    public function testMultFQ2(PointFQ2 a, int scalar, PointFQ2 res) {
+       require(BN128.multPointByScalarFQ2(a, scalar) == res);
     }
 
 }

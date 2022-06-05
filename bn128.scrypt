@@ -161,6 +161,27 @@ library BN128 {
         return [a, b];
     }
 
+    static function addPointsFQ2(PointFQ2 a, PointFQ2 b) : PointFQ2 {
+        int[2] l0 = _subCoeffsFQ2(b.y, a.y);
+        int[2] l1 = _subCoeffsFQ2(b.x, a.x);
+        int[2] l1ModInv = modInverseEGCD_FQ2(l1);
+
+        int[2] l = _mulCoeffsFQ2(l0, l1ModInv);
+
+        int[2] lSquared = _mulCoeffsFQ2(l, l);
+        int[2] newX = _subCoeffsFQ2(_subCoeffsFQ2(lSquared, a.x), b.x);
+
+        int[2] lNeg = _negCoeffsFQ2(l);
+        int[2] newY_p0 = _mulCoeffsFQ2(lNeg, newX);
+        int[2] newY_p1 = _mulCoeffsFQ2(l, a.x);
+        int[2] newY = _subCoeffsFQ2(_addCoeffsFQ2(newY_p0, newY_p1), a.y);
+
+        return {
+            [modReduce(newX[0], P), modReduce(newX[1], P)],
+            [modReduce(newY[0], P), modReduce(newY[1], P)]
+        };
+    }
+
     static function doublePointFQ2(PointFQ2 p) : PointFQ2 {
         int[2] xSquared = _mulCoeffsFQ2(p.x, p.x);
 
@@ -182,6 +203,26 @@ library BN128 {
             [modReduce(newX[0], P), modReduce(newX[1], P)],
             [modReduce(newY[0], P), modReduce(newY[1], P)]
         };
+    }
+
+    static function multPointByScalarFQ2(PointFQ2 p, int m) : PointFQ2 {
+        // Double and add method.
+        // Lowest bit to highest.
+        PointFQ2 q = {[0, 0], [0, 0]};
+
+        bytes mb =   reverseBytes(num2bin(m, S), S);
+        bytes mask = reverseBytes(num2bin(1, S), S);
+        bytes zero = reverseBytes(num2bin(0, S), S);
+
+        loop (CURVE_BITS) : i {
+            if ((mb & (mask << i)) != zero) {
+                q = addPointsFQ2(q, p);
+            }
+
+            p = doublePointFQ2(p);
+        }
+
+        return q;
     }
 
     static function addPointsFQ(PointFQ p, PointFQ q) : PointFQ {

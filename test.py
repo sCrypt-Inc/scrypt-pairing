@@ -94,6 +94,21 @@ if __name__ == '__main__':
             [inv_res.coeffs[0].n, inv_res.coeffs[1].n]
             ).verify()
 
+    assert bn128_curve_test.testAddFQ2(
+            PointFQ2({ 
+                'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
+                'y': [key_pub[1].coeffs[0].n, key_pub[1].coeffs[1].n]
+                }),
+            PointFQ2({ 
+                'x': [point_to_add[0].coeffs[0].n, point_to_add[0].coeffs[1].n],
+                'y': [point_to_add[1].coeffs[0].n, point_to_add[1].coeffs[1].n]
+                }),
+            PointFQ2({ 
+                'x': [point_sum[0].coeffs[0].n, point_sum[0].coeffs[1].n],
+                'y': [point_sum[1].coeffs[0].n, point_sum[1].coeffs[1].n]
+                })
+            ).verify()
+
     assert bn128_curve_test.testDoubleFQ2(
             PointFQ2({ 
                 'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
@@ -105,3 +120,14 @@ if __name__ == '__main__':
                 })
             ).verify()
 
+    assert bn128_curve_test.testMultFQ2(
+            PointFQ2({ 
+                'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
+                'y': [key_pub[1].coeffs[0].n, key_pub[1].coeffs[1].n]
+                }),
+            scalar,
+            PointFQ2({ 
+                'x': [point_scaled[0].coeffs[0].n, point_scaled[0].coeffs[1].n],
+                'y': [point_scaled[1].coeffs[0].n, point_scaled[1].coeffs[1].n]
+                })
+            ).verify()
