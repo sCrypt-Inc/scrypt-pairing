@@ -15,7 +15,7 @@ p = 2188824287183927522224640574525727508869631115729782366268903789464522620858
 if __name__ == '__main__':
     contract = 'testCurve.scrypt' 
 
-    compiler_result = compile_contract(contract, debug=True)
+    compiler_result = compile_contract(contract, debug=False)
     desc = compiler_result.to_desc()
 
     # Load desc instead:
@@ -53,6 +53,18 @@ if __name__ == '__main__':
                 PointFQ({ 'x': point_sum[0].n, 'y': point_sum[1].n}), 
             ).verify()
 
+    assert bn128_curve_test.testAddFQ(
+                PointFQ({ 'x': key_pub[0].n, 'y': key_pub[1].n}), 
+                PointFQ({ 'x': key_pub[0].n, 'y': key_pub[1].n}), 
+                PointFQ({ 'x': point_doubled[0].n, 'y': point_doubled[1].n}), 
+            ).verify()
+
+    assert bn128_curve_test.testAddFQ(
+                PointFQ({ 'x': key_pub[0].n, 'y': key_pub[1].n}), 
+                PointFQ({ 'x': 0, 'y': 0 }), 
+                PointFQ({ 'x': key_pub[0].n, 'y': key_pub[1].n}), 
+            ).verify()
+
     assert bn128_curve_test.testDoubleFQ(
                 PointFQ({ 'x': key_pub[0].n, 'y': key_pub[1].n}), 
                 PointFQ({ 'x': point_doubled[0].n, 'y': point_doubled[1].n}), 
@@ -69,8 +81,8 @@ if __name__ == '__main__':
 
     PointFQ2 = type_classes['PointFQ2']
 
-    key_priv = random.randint(0, p)
-    #key_priv = 10217434817925140929608337607270499770332676702964002029488453146631842237125
+    #key_priv = random.randint(0, p)
+    key_priv = 10217434817925140929608337607270499770332676702964002029488453146631842237125
     key_pub = bn128.multiply(bn128.G2, key_priv)
 
     # Polynomial inversion
@@ -85,7 +97,8 @@ if __name__ == '__main__':
     point_doubled = bn128.double(key_pub)
 
     # Scalar multiplication
-    scalar = random.randint(0, p)
+    #scalar = random.randint(0, p)
+    scalar = 14328909994810857915050681266785399075811350394578396091794877660113927178292
     point_scaled = bn128.multiply(key_pub, scalar)
 
 
@@ -107,6 +120,36 @@ if __name__ == '__main__':
                 'x': [point_sum[0].coeffs[0].n, point_sum[0].coeffs[1].n],
                 'y': [point_sum[1].coeffs[0].n, point_sum[1].coeffs[1].n]
                 })
+            ).verify()
+
+    assert bn128_curve_test.testAddFQ2(
+            PointFQ2({ 
+                'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
+                'y': [key_pub[1].coeffs[0].n, key_pub[1].coeffs[1].n]
+                }),
+            PointFQ2({ 
+                'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
+                'y': [key_pub[1].coeffs[0].n, key_pub[1].coeffs[1].n]
+                }),
+            PointFQ2({ 
+                'x': [point_doubled[0].coeffs[0].n, point_doubled[0].coeffs[1].n],
+                'y': [point_doubled[1].coeffs[0].n, point_doubled[1].coeffs[1].n]
+                })
+            ).verify()
+
+    assert bn128_curve_test.testAddFQ2(
+            PointFQ2({ 
+                'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
+                'y': [key_pub[1].coeffs[0].n, key_pub[1].coeffs[1].n]
+                }),
+            PointFQ2({ 
+                'x': [0, 0],
+                'y': [0, 0]
+                }),
+            PointFQ2({ 
+                'x': [key_pub[0].coeffs[0].n, key_pub[0].coeffs[1].n],
+                'y': [key_pub[1].coeffs[0].n, key_pub[1].coeffs[1].n]
+                }),
             ).verify()
 
     assert bn128_curve_test.testDoubleFQ2(

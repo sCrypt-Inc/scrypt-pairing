@@ -1,11 +1,24 @@
+// TODO: Split FQ, FQ2 and FQ12 into seperate libs or use generics or something like that to shorted duplicated code?
+// TODO: Implement branchless square and multiply mod inverses over P. For FQ it should be straightforward, but what about
+//       higher degree polynomials?
+
+type FQ = int;
+type FQ2 = int[2];
+type FQ12 = int[12];
+
 struct PointFQ {
     int x;
     int y;
 }
 
 struct PointFQ2 {
-    int[2] x;
-    int[2] y;
+    FQ2 x;
+    FQ2 y;
+}
+
+struct PointFQ12 {
+    FQ12 x;
+    FQ12 y;
 }
 
 library BN128 {
@@ -15,6 +28,8 @@ library BN128 {
 
     // Key int size:
     static const int S = 33;    // 32 bytes plus sign byte
+    static const bytes mask = b'000000000000000000000000000000000000000000000000000000000000000001';
+    static const bytes zero = b'000000000000000000000000000000000000000000000000000000000000000000';
 
     // Curve coefficients:
     static const int a = 0;
@@ -26,7 +41,21 @@ library BN128 {
     // Generator point over FQ2:
     // TODO
 
-    static const int[2] modulusCoeffsFQ2 = [1, 0];
+    // Generator point over FQ12:
+    // TODO
+
+    static const FQ2 modulusCoeffsFQ2 = [1, 0];
+    static const FQ12 modulusCoeffsFQ12 = [82, 0, 0, 0, 0, 0, -18, 0, 0, 0, 0, 0];
+
+    static const FQ2 zeroFQ2 = [0, 0];
+    static const FQ2 oneFQ2 = [0, 1];
+    static const PointFQ2 zeroPointFQ2 = { zeroFQ2, zeroFQ2 };
+    static const PointFQ2 onePointFQ2 = { oneFQ2, oneFQ2 };
+
+    static const FQ12 zeroFQ12 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    static const FQ12 oneFQ12 =  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    static const PointFQ12 zeroPointFQ12 = { zeroFQ12, zeroFQ12 };
+    static const PointFQ12 onePointFQ12 = { oneFQ12, oneFQ12 };
 
     // Curve field modulus:
     static const int P = 0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47;
@@ -45,6 +74,23 @@ library BN128 {
     static function modReduce(int k, int modulus) : int {
         int res = k % modulus;
         return (res < 0) ? res + modulus : res;
+    }
+
+    static function modReduceFQ12(FQ12 k, int modulus) : FQ12 {
+         return [
+             modReduce(k[0], modulus),
+             modReduce(k[1], modulus),
+             modReduce(k[2], modulus),
+             modReduce(k[3], modulus),
+             modReduce(k[4], modulus),
+             modReduce(k[5], modulus),
+             modReduce(k[6], modulus),
+             modReduce(k[7], modulus),
+             modReduce(k[8], modulus),
+             modReduce(k[9], modulus),
+             modReduce(k[10], modulus),
+             modReduce(k[11], modulus)
+        ];
     }
 
     static function modInverseEGCD(int x, int n) : int {
@@ -76,23 +122,81 @@ library BN128 {
         return res;
     }
 
-    static function _mulCoeffsWScalarFQ2(int[2] coeffs, int scalar) : int[2] {
+    static function _mulCoeffsWScalarFQ2(FQ2 coeffs, int scalar) : FQ2 {
         return [coeffs[0] * scalar, coeffs[1] * scalar];
     }
 
-    static function _addCoeffsFQ2(int[2] a, int[2] b) : int[2] {
+    static function _mulCoeffsWScalarFQ12(FQ12 coeffs, int scalar) : FQ12 {
+        return [
+            coeffs[0] * scalar,
+            coeffs[1] * scalar,
+            coeffs[2] * scalar,
+            coeffs[3] * scalar,
+            coeffs[4] * scalar,
+            coeffs[5] * scalar,
+            coeffs[6] * scalar,
+            coeffs[7] * scalar,
+            coeffs[8] * scalar,
+            coeffs[9] * scalar,
+            coeffs[10] * scalar,
+            coeffs[11] * scalar
+        ];
+    }
+
+    static function _addCoeffsFQ2(FQ2 a, FQ2 b) : FQ2 {
         return [a[0] + b[0], a[1] + b[1]];
     }
 
-    static function _subCoeffsFQ2(int[2] a, int[2] b) : int[2] {
+    static function _addCoeffsFQ12(FQ12 a, FQ12 b) : FQ12 {
+        return [
+            a[0] + b[0],
+            a[1] + b[1],
+            a[2] + b[2],
+            a[3] + b[3],
+            a[4] + b[4],
+            a[5] + b[5],
+            a[6] + b[6],
+            a[7] + b[7],
+            a[8] + b[8],
+            a[9] + b[9],
+            a[10] + b[10],
+            a[11] + b[11]
+        ];
+    }
+
+    static function _subCoeffsFQ2(FQ2 a, FQ2 b) : FQ2 {
         return [a[0] - b[0], a[1] - b[1]];
     }
 
-    static function _negCoeffsFQ2(int[2] a) : int[2] {
+    static function _subCoeffsFQ12(FQ12 a, FQ12 b) : FQ12 {
+        return [
+            a[0] - b[0],
+            a[1] - b[1],
+            a[2] - b[2],
+            a[3] - b[3],
+            a[4] - b[4],
+            a[5] - b[5],
+            a[6] - b[6],
+            a[7] - b[7],
+            a[8] - b[8],
+            a[9] - b[9],
+            a[10] - b[10],
+            a[11] - b[11]
+        ];
+    }
+
+    static function _negCoeffsFQ2(FQ2 a) : FQ2 {
         return [-a[0], -a[1]];
     }
 
-    static function _mulCoeffsFQ2(int[2] a, int[2] b) : int[2] {
+    static function _negCoeffsFQ12(FQ12 a) : FQ12 {
+        return [
+           -a[0], -a[1], -a[2], -a[3], -a[4], -a[5],
+           -a[6], -a[7], -a[8], -a[9], -a[10], -a[11]
+        ];
+    }
+
+    static function _mulCoeffsFQ2(FQ2 a, FQ2 b) : FQ2 {
         int[3] res = [0, 0, 0];
         loop (2) : i {
             loop (2) : j {
@@ -108,7 +212,29 @@ library BN128 {
         return [res[0], res[1]];
     }
 
-    static function modInverseEGCD_FQ2(int[2] coeffs) : int[2] {
+    static function _mulCoeffsFQ12(FQ12 a, FQ12 b) : FQ12 {
+        int[23] res = repeat(0, 23);
+        loop (12) : i {
+            loop (12) : j {
+               res[i + j] += a[i] * b[j]; 
+            }
+        }
+
+        loop (10) : i {
+	    int top = res[22 - i];
+	    int exp = (22 - i) - 12;
+            loop (12) : j {
+                res[exp + j] -= top * modulusCoeffsFQ12[j];
+            }
+        }
+
+        return [
+            res[0], res[1], res[2], res[3], res[4], res[5],
+            res[6], res[7], res[8], res[9], res[10], res[11]
+        ];
+    }
+
+    static function modInverseEGCD_FQ2(FQ2 coeffs) : FQ2 {
         int[3] lm = [1, 0, 0];
         int[3] hm = [0, 0, 0];
 
@@ -161,47 +287,198 @@ library BN128 {
         return [a, b];
     }
 
+    static function modInverseEGCD_FQ12(FQ12 coeffs) : FQ12 {
+        int[13] lm = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        int[13] hm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        int[13] low = [
+                coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4], coeffs[5],
+                coeffs[6], coeffs[7], coeffs[8], coeffs[9], coeffs[10], coeffs[11], 0
+            ];
+        int[13] high = [
+                coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4], coeffs[5],
+                coeffs[6], coeffs[7], coeffs[8], coeffs[9], coeffs[10], coeffs[11], 1
+            ];
+
+        loop (4) : i {
+            int[13] r = _poly_rounded_divFQ12(high, low);
+
+            int[13] nm = hm;
+            int[13] _new = high;
+
+            loop (13) : j {
+                loop (13) : k {
+                    if (k < (13 - j)) {
+                        nm[j + k] -= lm[j] * r[k];
+                        _new[j + k] -= low[j] * r[k];
+                    }
+                }
+            }
+            
+            hm = lm;
+            lm = nm;
+            high = low;
+            low = _new;
+        }
+
+        int low0Inv = modInverseEGCD(low[0], P);
+        return [
+            modReduce(lm[0] * low0Inv, P),
+            modReduce(lm[1] * low0Inv, P),
+            modReduce(lm[2] * low0Inv, P),
+            modReduce(lm[3] * low0Inv, P),
+            modReduce(lm[4] * low0Inv, P),
+            modReduce(lm[5] * low0Inv, P),
+            modReduce(lm[6] * low0Inv, P),
+            modReduce(lm[7] * low0Inv, P),
+            modReduce(lm[8] * low0Inv, P),
+            modReduce(lm[9] * low0Inv, P),
+            modReduce(lm[10] * low0Inv, P),
+            modReduce(lm[11] * low0Inv, P)
+        ];
+    }
+
+    static function _poly_rounded_divFQ12(int[13] a, int[13] b) : int[13] {
+        int dega = _degFQ12(a);
+        int degb = _degFQ12(b);
+        int[13] temp = a;
+        int[13] o = repeat(0, 13);
+
+	int degDiff = dega - degb;
+        loop (12) : i {    // 12 is the max degree diff
+            int idxNeg = 11 - i; 
+            if (i < degDiff) {
+                int bValInv = modInverseEGCD(b[degb], P);
+                o[i] += modReduce(temp[degb + i] * bValInv, P);
+                loop (12) : c {
+                    if (c <= degb) {
+                        temp[c + i] -= o[c];
+                    }
+                }
+            }
+        }
+
+        return o;
+    }
+
+    static function _degFQ12(int[13] a) : int {
+       bool done = false; 
+       int degree = 0;
+       loop (13) : i {
+           if (!done) {
+               if (a[12 - i] != 0) {
+                   done = true;
+                   degree = 12 - i;
+               }
+           }
+       }
+       return degree;
+    }
+
     static function addPointsFQ2(PointFQ2 a, PointFQ2 b) : PointFQ2 {
-        int[2] l0 = _subCoeffsFQ2(b.y, a.y);
-        int[2] l1 = _subCoeffsFQ2(b.x, a.x);
-        int[2] l1ModInv = modInverseEGCD_FQ2(l1);
+        PointFQ2 res = zeroPointFQ2;
 
-        int[2] l = _mulCoeffsFQ2(l0, l1ModInv);
+        if (a.x == b.x && a.y == b.y) {
+            res = doublePointFQ2(a);
+        } else if (a.x == [0, 0] && a.y == [0, 0]) {
+            res = b;
+        } else if (b.x == [0, 0] && b.y == [0, 0]) {
+            res = a;
+        } else {
+            FQ2 l0 = _subCoeffsFQ2(b.y, a.y);
+            FQ2 l1 = _subCoeffsFQ2(b.x, a.x);
+            FQ2 l1ModInv = modInverseEGCD_FQ2(l1);
 
-        int[2] lSquared = _mulCoeffsFQ2(l, l);
-        int[2] newX = _subCoeffsFQ2(_subCoeffsFQ2(lSquared, a.x), b.x);
+            FQ2 l = _mulCoeffsFQ2(l0, l1ModInv);
 
-        int[2] lNeg = _negCoeffsFQ2(l);
-        int[2] newY_p0 = _mulCoeffsFQ2(lNeg, newX);
-        int[2] newY_p1 = _mulCoeffsFQ2(l, a.x);
-        int[2] newY = _subCoeffsFQ2(_addCoeffsFQ2(newY_p0, newY_p1), a.y);
+            FQ2 lSquared = _mulCoeffsFQ2(l, l);
+            FQ2 newX = _subCoeffsFQ2(_subCoeffsFQ2(lSquared, a.x), b.x);
 
+            FQ2 lNeg = _negCoeffsFQ2(l);
+            FQ2 newY_p0 = _mulCoeffsFQ2(lNeg, newX);
+            FQ2 newY_p1 = _mulCoeffsFQ2(l, a.x);
+            FQ2 newY = _subCoeffsFQ2(_addCoeffsFQ2(newY_p0, newY_p1), a.y);
+
+            res = {
+                [modReduce(newX[0], P), modReduce(newX[1], P)],
+                [modReduce(newY[0], P), modReduce(newY[1], P)]
+            };
+        }
+
+        return res;
+    }
+
+    static function addPointsFQ12(PointFQ12 a, PointFQ12 b) : PointFQ12 {
+        PointFQ12 res = zeroPointFQ12;
+             
+        if (a.x == b.x && a.y == b.y) {
+            res = doublePointFQ12(a);
+        } else {
+            FQ12 l0 = _subCoeffsFQ12(b.y, a.y);
+            FQ12 l1 = _subCoeffsFQ12(b.x, a.x);
+            FQ12 l1ModInv = modInverseEGCD_FQ12(l1);
+
+            FQ12 l = _mulCoeffsFQ12(l0, l1ModInv);
+
+            FQ12 lSquared = _mulCoeffsFQ12(l, l);
+            FQ12 newX = _subCoeffsFQ12(_subCoeffsFQ12(lSquared, a.x), b.x);
+
+            FQ12 lNeg = _negCoeffsFQ12(l);
+            FQ12 newY_p0 = _mulCoeffsFQ12(lNeg, newX);
+            FQ12 newY_p1 = _mulCoeffsFQ12(l, a.x);
+            FQ12 newY = _subCoeffsFQ12(_addCoeffsFQ12(newY_p0, newY_p1), a.y);
+            res = {
+		modReduceFQ12(newX, P),
+		modReduceFQ12(newY, P)
+            };
+        }
+
+        return res;
+    }
+
+    static function doublePointFQ2(PointFQ2 p) : PointFQ2 {
+        FQ2 xSquared = _mulCoeffsFQ2(p.x, p.x);
+
+        FQ2 l1 = _mulCoeffsWScalarFQ2(xSquared, 3);
+        FQ2 l2 = _mulCoeffsWScalarFQ2(p.y, 2);
+
+        FQ2 l = _mulCoeffsFQ2(l1, modInverseEGCD_FQ2(l2));
+
+        FQ2 lSquared = _mulCoeffsFQ2(l, l);
+        FQ2 xDoubl = _mulCoeffsWScalarFQ2(p.x, 2);
+        FQ2 newX = _subCoeffsFQ2(lSquared, xDoubl);
+
+        FQ2 lNeg = _negCoeffsFQ2(l);
+        FQ2 newY_p0 = _mulCoeffsFQ2(lNeg, newX);
+        FQ2 newY_p1 = _mulCoeffsFQ2(l, p.x);
+        FQ2 newY = _subCoeffsFQ2(_addCoeffsFQ2(newY_p0, newY_p1), p.y);
+        
         return {
             [modReduce(newX[0], P), modReduce(newX[1], P)],
             [modReduce(newY[0], P), modReduce(newY[1], P)]
         };
     }
 
-    static function doublePointFQ2(PointFQ2 p) : PointFQ2 {
-        int[2] xSquared = _mulCoeffsFQ2(p.x, p.x);
+    static function doublePointFQ12(PointFQ12 p) : PointFQ12 {
+        FQ12 xSquared = _mulCoeffsFQ12(p.x, p.x);
 
-        int[2] l1 = _mulCoeffsWScalarFQ2(xSquared, 3);
-        int[2] l2 = _mulCoeffsWScalarFQ2(p.y, 2);
+        FQ12 l1 = _mulCoeffsWScalarFQ12(xSquared, 3);
+        FQ12 l2 = _mulCoeffsWScalarFQ12(p.y, 2);
 
-        int[2] l = _mulCoeffsFQ2(l1, modInverseEGCD_FQ2(l2));
+        FQ12 l = _mulCoeffsFQ12(l1, modInverseEGCD_FQ12(l2));
 
-        int[2] lSquared = _mulCoeffsFQ2(l, l);
-        int[2] xDoubl = _mulCoeffsWScalarFQ2(p.x, 2);
-        int[2] newX = _subCoeffsFQ2(lSquared, xDoubl);
+        FQ12 lSquared = _mulCoeffsFQ12(l, l);
+        FQ12 xDoubl = _mulCoeffsWScalarFQ12(p.x, 2);
+        FQ12 newX = _subCoeffsFQ12(lSquared, xDoubl);
 
-        int[2] lNeg = _negCoeffsFQ2(l);
-        int[2] newY_p0 = _mulCoeffsFQ2(lNeg, newX);
-        int[2] newY_p1 = _mulCoeffsFQ2(l, p.x);
-        int[2] newY = _subCoeffsFQ2(_addCoeffsFQ2(newY_p0, newY_p1), p.y);
+        FQ12 lNeg = _negCoeffsFQ12(l);
+        FQ12 newY_p0 = _mulCoeffsFQ12(lNeg, newX);
+        FQ12 newY_p1 = _mulCoeffsFQ12(l, p.x);
+        FQ12 newY = _subCoeffsFQ12(_addCoeffsFQ12(newY_p0, newY_p1), p.y);
         
         return {
-            [modReduce(newX[0], P), modReduce(newX[1], P)],
-            [modReduce(newY[0], P), modReduce(newY[1], P)]
+	    modReduceFQ12(newX, P),
+	    modReduceFQ12(newY, P)
         };
     }
 
@@ -211,8 +488,26 @@ library BN128 {
         PointFQ2 q = {[0, 0], [0, 0]};
 
         bytes mb =   reverseBytes(num2bin(m, S), S);
-        bytes mask = reverseBytes(num2bin(1, S), S);
-        bytes zero = reverseBytes(num2bin(0, S), S);
+
+        //loop (CURVE_BITS) : i {
+        //    if (i == 1) {
+        //        require(p.x[0] == 5824120281874431589940761181008766003016455314954365240731961123101097176454);
+        //    }
+        //    if (i == 2) {
+        //        require(p.x[0] == 687640652750591342334742604453510892254296554164369498751583714874692996189);
+        //    }
+	//    if (i == 12) {
+	//	require(p.x[0] == 1392590206570674513621495862960540928687813102199086131477826188108028561136);
+	//    }
+	//    if (i == CURVE_BITS - 2) {
+	//	require(p.x[0] == 14756807884139658381221540658038773755644724670858569789854048969755421437908);
+	//    }	
+        //    if ((mb & (mask << i)) != zero) {
+        //        q = addPointsFQ2(q, p);
+        //    }
+
+        //    p = doublePointFQ2(p);
+        //}
 
         loop (CURVE_BITS) : i {
             if ((mb & (mask << i)) != zero) {
@@ -221,8 +516,8 @@ library BN128 {
 
             p = doublePointFQ2(p);
         }
-
-        return q;
+	
+	return q;
     }
 
     static function addPointsFQ(PointFQ p, PointFQ q) : PointFQ {
@@ -263,8 +558,6 @@ library BN128 {
         PointFQ q = {0, 0};
 
         bytes mb =   reverseBytes(num2bin(m, S), S);
-        bytes mask = reverseBytes(num2bin(1, S), S);
-        bytes zero = reverseBytes(num2bin(0, S), S);
 
         loop (CURVE_BITS) : i {
             if ((mb & (mask << i)) != zero) {
@@ -282,8 +575,6 @@ library BN128 {
         PointFQ q = {0, 0};
 
         bytes mb =   reverseBytes(num2bin(m, S), S);
-        bytes mask = reverseBytes(num2bin(1, S), S);
-        bytes zero = reverseBytes(num2bin(0, S), S);
 
         loop (CURVE_BITS) : i {
             if ((mb & (mask << i)) != zero) {

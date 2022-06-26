@@ -1,7 +1,12 @@
 import "bn128.scrypt";
+import "pairing.scrypt";
 
 
 contract BN128CurveTest {
+
+    public function testFQmodInv(FQ x, FQ res) {
+       require(BN128.modInverseEGCD(x, BN128.P) == res);
+    }
 
     public function testAddFQ(PointFQ a, PointFQ b, PointFQ sum) {
        require(BN128.addPointsFQ(a, b) == sum);
@@ -17,11 +22,10 @@ contract BN128CurveTest {
 
     //------------------
 
-    public function testFQ2modInv(int[2] x, int[2] res) {
-       int[2] _res = BN128.modInverseEGCD_FQ2(x);
-       require(_res == res);
+    public function testFQ2modInv(FQ2 x, FQ2 res) {
+       require(BN128.modInverseEGCD_FQ2(x) == res);
     }
-
+ 
     public function testAddFQ2(PointFQ2 a, PointFQ2 b, PointFQ2 sum) {
        require(BN128.addPointsFQ2(a, b) == sum);
     }
@@ -31,7 +35,21 @@ contract BN128CurveTest {
     }
 
     public function testMultFQ2(PointFQ2 a, int scalar, PointFQ2 res) {
-       require(BN128.multPointByScalarFQ2(a, scalar) == res);
+        require(BN128.multPointByScalarFQ2(a, scalar) == res);
+    }
+
+    //------------------
+
+    public function testFQ12modInv(FQ12 x, FQ12 res) {
+        require(BN128.modInverseEGCD_FQ12(x) == res);
+    }
+
+    public function testAddFQ12(PointFQ12 a, PointFQ12 b, PointFQ12 sum) {
+       require(BN128.addPointsFQ12(a, b) == sum);
+    }
+
+    public function testDoubleFQ12(PointFQ12 a, PointFQ12 d) {
+       require(BN128.doublePointFQ12(a) == d);
     }
 
 }
