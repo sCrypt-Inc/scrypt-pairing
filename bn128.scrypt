@@ -296,8 +296,7 @@ library BN128 {
                 coeffs[6], coeffs[7], coeffs[8], coeffs[9], coeffs[10], coeffs[11], 0
             ];
         int[13] high = [
-                coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4], coeffs[5],
-                coeffs[6], coeffs[7], coeffs[8], coeffs[9], coeffs[10], coeffs[11], 1
+                82, 0, 0, 0, 0, 0, -18, 0, 0, 0, 0, 0, 1
             ];
 
         loop (4) : i {
@@ -309,8 +308,8 @@ library BN128 {
             loop (13) : j {
                 loop (13) : k {
                     if (k < (13 - j)) {
-                        nm[j + k] -= lm[j] * r[k];
-                        _new[j + k] -= low[j] * r[k];
+                        nm[j + k] = modReduce(nm[j + k] - (lm[j] * r[k]), P);
+                        _new[j + k] = modReduce(_new[j + k] - (low[j] * r[k]), P);
                     }
                 }
             }
@@ -319,6 +318,7 @@ library BN128 {
             lm = nm;
             high = low;
             low = _new;
+            
         }
 
         int low0Inv = modInverseEGCD(low[0], P);
@@ -344,21 +344,37 @@ library BN128 {
         int[13] temp = a;
         int[13] o = repeat(0, 13);
 
-	int degDiff = dega - degb;
+        // TODO: modular reduction could just be done on a higher level
+
+	    int degDiff = dega - degb;
         loop (12) : i {    // 12 is the max degree diff
             int idxNeg = 11 - i; 
-            if (i < degDiff) {
+            if (idxNeg <= degDiff) {
                 int bValInv = modInverseEGCD(b[degb], P);
-                o[i] += modReduce(temp[degb + i] * bValInv, P);
+                o[idxNeg] += temp[degb + idxNeg] * bValInv;
                 loop (12) : c {
                     if (c <= degb) {
-                        temp[c + i] -= o[c];
+                        temp[c + idxNeg] -= o[c];
                     }
                 }
             }
         }
 
-        return o;
+        return [
+            modReduce(o[0], P),
+            modReduce(o[1], P),
+            modReduce(o[2], P),
+            modReduce(o[3], P),
+            modReduce(o[4], P),
+            modReduce(o[5], P),
+            modReduce(o[6], P),
+            modReduce(o[7], P),
+            modReduce(o[8], P),
+            modReduce(o[9], P),
+            modReduce(o[10], P),
+            modReduce(o[11], P),
+            modReduce(o[12], P)
+        ];
     }
 
     static function _degFQ12(int[13] a) : int {
@@ -413,6 +429,10 @@ library BN128 {
              
         if (a.x == b.x && a.y == b.y) {
             res = doublePointFQ12(a);
+        } else if (a.x == zeroFQ12 && a.y == zeroFQ12) {
+            res = b;
+        } else if (b.x == zeroFQ12 && b.y == zeroFQ12) {
+            res = a;
         } else {
             FQ12 l0 = _subCoeffsFQ12(b.y, a.y);
             FQ12 l1 = _subCoeffsFQ12(b.x, a.x);
@@ -477,8 +497,8 @@ library BN128 {
         FQ12 newY = _subCoeffsFQ12(_addCoeffsFQ12(newY_p0, newY_p1), p.y);
         
         return {
-	    modReduceFQ12(newX, P),
-	    modReduceFQ12(newY, P)
+	        modReduceFQ12(newX, P),
+	        modReduceFQ12(newY, P)
         };
     }
 

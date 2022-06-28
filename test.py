@@ -29,14 +29,14 @@ if __name__ == '__main__':
     bn128_curve_test = BN128CurveTest()
 
 
-    ###### FQ #######
+    ##### FQ #######
 
-    key_priv = random.randint(0, p)
+    key_priv = random.randint(1, p)
     #key_priv = 10217434817925140929608337607270499770332676702964002029488453146631842237125
     key_pub = bn128.multiply(bn128.G1, key_priv)
 
     # Point addition
-    to_add = random.randint(0, p)
+    to_add = random.randint(1, p)
     point_to_add = bn128.multiply(bn128.G1, to_add)
     point_sum = bn128.add(key_pub, point_to_add)
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     point_doubled = bn128.double(key_pub)
 
     # Scalar multiplication
-    scalar = random.randint(0, p)
+    scalar = random.randint(1, p)
     point_scaled = bn128.multiply(key_pub, scalar)
 
     assert bn128_curve_test.testAddFQ(
@@ -81,15 +81,14 @@ if __name__ == '__main__':
 
     PointFQ2 = type_classes['PointFQ2']
 
-    #key_priv = random.randint(0, p)
-    key_priv = 10217434817925140929608337607270499770332676702964002029488453146631842237125
+    key_priv = random.randint(1, p)
     key_pub = bn128.multiply(bn128.G2, key_priv)
 
     # Polynomial inversion
     inv_res = key_pub[0].inv()
 
     # Point addition
-    to_add = random.randint(0, p)
+    to_add = random.randint(1, p)
     point_to_add = bn128.multiply(bn128.G2, to_add)
     point_sum = bn128.add(key_pub, point_to_add)
 
@@ -97,8 +96,7 @@ if __name__ == '__main__':
     point_doubled = bn128.double(key_pub)
 
     # Scalar multiplication
-    #scalar = random.randint(0, p)
-    scalar = 14328909994810857915050681266785399075811350394578396091794877660113927178292
+    scalar = random.randint(1, p)
     point_scaled = bn128.multiply(key_pub, scalar)
 
 
@@ -172,5 +170,92 @@ if __name__ == '__main__':
             PointFQ2({ 
                 'x': [point_scaled[0].coeffs[0].n, point_scaled[0].coeffs[1].n],
                 'y': [point_scaled[1].coeffs[0].n, point_scaled[1].coeffs[1].n]
+                })
+            ).verify()
+
+    ###### FQ2 #######
+
+    PointFQ12 = type_classes['PointFQ12']
+
+    key_priv = random.randint(1, p)
+    #key_priv = 10217434817925140929608337607270499770332676702964002029488453146631842237125
+    key_pub = bn128.multiply(bn128.G12, key_priv)
+
+    # Polynomial inversion
+    inv_res = key_pub[0].inv()
+
+    # Point addition
+    to_add = random.randint(1, p)
+    point_to_add = bn128.multiply(bn128.G12, to_add)
+    point_sum = bn128.add(key_pub, point_to_add)
+
+    # Point doubling
+    point_doubled = bn128.double(key_pub)
+
+    # Scalar multiplication
+    scalar = random.randint(1, p)
+    point_scaled = bn128.multiply(key_pub, scalar)
+
+    kp_x = key_pub[0].coeffs
+    kp_x_inv = inv_res.coeffs
+
+    assert bn128_curve_test.testFQ12modInv(
+            [kp_x[i].n for i in range(12)],
+            [kp_x_inv[i].n for i in range(12)],
+            ).verify()
+
+    assert bn128_curve_test.testAddFQ12(
+            PointFQ12({ 
+                'x': [key_pub[0].coeffs[i].n for i in range(12)],
+                'y': [key_pub[1].coeffs[i].n for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [point_to_add[0].coeffs[i].n for i in range(12)],
+                'y': [point_to_add[1].coeffs[i].n for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [point_sum[0].coeffs[i].n for i in range(12)],
+                'y': [point_sum[1].coeffs[i].n for i in range(12)]
+                }),
+            ).verify()
+
+    assert bn128_curve_test.testAddFQ12(
+            PointFQ12({ 
+                'x': [key_pub[0].coeffs[i].n for i in range(12)],
+                'y': [key_pub[1].coeffs[i].n for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [key_pub[0].coeffs[i].n for i in range(12)],
+                'y': [key_pub[1].coeffs[i].n for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [point_doubled[0].coeffs[i].n for i in range(12)],
+                'y': [point_doubled[1].coeffs[i].n for i in range(12)]
+                }),
+            ).verify()
+
+    assert bn128_curve_test.testAddFQ12(
+            PointFQ12({ 
+                'x': [key_pub[0].coeffs[i].n for i in range(12)],
+                'y': [key_pub[1].coeffs[i].n for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [0 for i in range(12)],
+                'y': [0 for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [key_pub[0].coeffs[i].n for i in range(12)],
+                'y': [key_pub[1].coeffs[i].n for i in range(12)]
+                }),
+            ).verify()
+
+    assert bn128_curve_test.testDoubleFQ12(
+            PointFQ12({ 
+                'x': [key_pub[0].coeffs[i].n for i in range(12)],
+                'y': [key_pub[1].coeffs[i].n for i in range(12)]
+                }),
+            PointFQ12({ 
+                'x': [point_doubled[0].coeffs[i].n for i in range(12)],
+                'y': [point_doubled[1].coeffs[i].n for i in range(12)]
                 })
             ).verify()
