@@ -1,0 +1,12 @@
+import "pairing.scrypt";
+
+
+contract PairingTest {
+
+    public function testPairing(Point Q, Point P, int res) {
+        int r = Pairing.pairing(Q, P);
+        require(r == res);
+    }
+
+}
+
