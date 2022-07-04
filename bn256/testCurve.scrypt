@@ -26,5 +26,14 @@ contract BN256CurveTest {
     public function testAddCurvePoints(CurvePoint a, CurvePoint b, CurvePoint res) {
         require(BN256.addCurvePoints(a, b) == res);
     }
+
+    public function testDoubleTwistPoint(TwistPoint a, TwistPoint res) {
+        require(BN256.doubleTwistPoint(a) == res);
+    }
+
+    public function testAddTwistPoints(TwistPoint a, TwistPoint b, TwistPoint res) {
+        require(BN256.addTwistPoints(a, b) == res);
+    }
+
 }
 

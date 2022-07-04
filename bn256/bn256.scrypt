@@ -64,19 +64,31 @@ library BN256 {
     }
 
     static function mulScalarFQ2(FQ2 a, int scalar) : FQ2 {
-        return [a[0] * scalar, a[1] * scalar];
+        return [
+            modReduce(a[0] * scalar, P),
+            modReduce(a[1] * scalar, P)
+        ];
     }
 
     static function addFQ2(FQ2 a, FQ2 b) : FQ2 {
-        return [a[0] + b[0], a[1] + b[1]];
+        return [
+            modReduce(a[0] + b[0], P), 
+            modReduce(a[1] + b[1], P)
+        ];
     }
 
     static function subFQ2(FQ2 a, FQ2 b) : FQ2 {
-        return [a[0] - b[0], a[1] - b[1]];
+        return [
+            modReduce(a[0] - b[0], P),
+            modReduce(a[1] - b[1], P)
+        ];
     }
 
     static function negFQ2(FQ2 a) : FQ2 {
-        return [a[0] * -1, a[1] * -1];
+        return [
+            modReduce(a[0] * -1, P), 
+            modReduce(a[1] * -1, P)
+        ];
     }
 
     static function squareFQ2(FQ2 a) : FQ2 {
@@ -272,7 +284,7 @@ library BN256 {
 
     static function doubleTwistPoint(TwistPoint a) : TwistPoint {
         // See http://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-0/doubling/dbl-2009-l.op3
-        TwistPoint res = {[0, 0], [0, 0], [0, 0], [0, 0]};
+        TwistPoint res = {[0, 0], [0, 0], [0, 0], a.t};
 
         FQ2 A = squareFQ2(a.x);
         FQ2 B = squareFQ2(a.y);
@@ -291,8 +303,6 @@ library BN256 {
         t = mulScalarFQ2(d, 2);
         res.x = subFQ2(f, t);
 
-        res.z = mulScalarFQ2(mulFQ2(a.y, a.z), 2);
-
         t = mulScalarFQ2(C, 2);
         t2 = mulScalarFQ2(t, 2);
         t = mulScalarFQ2(t2, 2);
@@ -300,12 +310,14 @@ library BN256 {
         t2 = mulFQ2(e, res.y);
         res.y = subFQ2(t2, t);
 
+        res.z = mulScalarFQ2(mulFQ2(res.y, a.z), 2);
+
         return res;
     }
 
 
     static function addTwistPoints(TwistPoint a, TwistPoint b) : TwistPoint {
-        TwistPoint res = {[0, 0], [0, 0], [0, 0], [0, 0]};
+        TwistPoint res = {[0, 0], [0, 0], [0, 0], a.t};
         
         if (a.z == [0, 0]) {
             res = b;
