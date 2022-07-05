@@ -1,0 +1,11 @@
+import "bn256pairing.scrypt";
+
+
+contract BN256PairingTest {
+
+    public function testMiller(TwistPoint a, CurvePoint b, FQ12Point res) {
+        require(BN256Pairing.miller(a, b) == res);
+    }
+
+}
+

@@ -19,6 +19,14 @@ contract BN256CurveTest {
         require(BN256.expFQ(a, e) == res);
     }
 
+    public function testMulFQ6(FQ6 a, FQ6 b, FQ6 res) {
+        require(BN256.mulFQ6(a, b) == res);
+    }
+
+    public function testSquareFQ6(FQ6 a, FQ6 res) {
+        require(BN256.squareFQ6(a) == res);
+    }
+
     public function testDoubleCurvePoint(CurvePoint a, CurvePoint res) {
         require(BN256.doubleCurvePoint(a) == res);
     }
@@ -33,6 +41,10 @@ contract BN256CurveTest {
 
     public function testAddTwistPoints(TwistPoint a, TwistPoint b, TwistPoint res) {
         require(BN256.addTwistPoints(a, b) == res);
+    }
+
+    public function testMakeAffineTwistPoint(TwistPoint a, TwistPoint res) {
+        require(BN256.makeAffineTwistPoint(a) == res);
     }
 
 }

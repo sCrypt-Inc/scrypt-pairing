@@ -2,7 +2,12 @@
 
 type FQ = int;
 type FQ2 = int[2];
-type FQ12 = int[12];
+
+struct FQ6 {
+    FQ2 x;
+    FQ2 y;
+    FQ2 z;
+}
 
 struct CurvePoint {
     FQ x;
@@ -16,6 +21,13 @@ struct TwistPoint {
     FQ2 y;
     FQ2 z;
     FQ2 t;
+}
+
+// FQ12Point implements the field of size p¹² as a quadratic extension of FQ6Point
+// where ω²=τ.
+struct FQ12Point {
+    FQ6 x;
+    FQ6 y;
 }
 
 library BN256 {
@@ -60,6 +72,13 @@ library BN256 {
         t = a[0] * b[0];
         ty -= t;
         
+        return [modReduce(tx, P), modReduce(ty, P)];
+    }
+
+    static function mulXiFQ2(FQ2 a) : FQ2 {
+        // (xi+y)(i+3) = (9x+y)i+(9y-x)
+        FQ tx = (a[0] << 3) + a[0] + a[1];
+        FQ ty = (a[1] << 3) + a[1] - a[0];
         return [modReduce(tx, P), modReduce(ty, P)];
     }
 
@@ -144,6 +163,103 @@ library BN256 {
             modReduce(axNeg * inv, P),
             modReduce(a[1] * inv, P)
         ];
+    }
+
+    static function mulFQ6(FQ6 a, FQ6 b) : FQ6 {
+        // "Multiplication and Squaring on Pairing-Friendly Fields"
+        // Section 4, Karatsuba method.
+        // http://eprint.iacr.org/2006/471.pdf
+
+        FQ2 v0 = mulFQ2(a.z, b.z);
+        FQ2 v1 = mulFQ2(a.y, b.y);
+        FQ2 v2 = mulFQ2(a.x, b.x);
+
+        FQ2 t0 = addFQ2(a.x, a.y);
+        FQ2 t1 = addFQ2(b.x, b.y);
+        FQ2 tz = mulFQ2(t0, t1);
+
+        tz = subFQ2(tz, v1);
+        tz = subFQ2(tz, v2);
+        tz = mulXiFQ2(tz);
+        tz = addFQ2(tz, v0);
+
+        t0 = addFQ2(a.y, a.z);
+        t1 = addFQ2(b.y, b.z);
+        
+        FQ2 ty = mulFQ2(t0, t1);
+        ty = subFQ2(ty, v0);
+        ty = subFQ2(ty, v1);
+        t0 = mulXiFQ2(v2);
+        ty = addFQ2(ty, t0);
+
+        t0 = addFQ2(a.x, a.z);
+        t1 = addFQ2(b.x, b.z);
+        FQ2 tx = mulFQ2(t0, t1);
+        tx = subFQ2(tx, v0);
+        tx = addFQ2(tx, v1);
+        tx = subFQ2(tx, v2);
+
+        return {tx, ty, tz};
+    }
+
+    static function mulScalarFQ6(FQ6 a, int scalar) : FQ6 {
+        return {
+            mulScalarFQ2(a.x, scalar),
+            mulScalarFQ2(a.y, scalar),
+            mulScalarFQ2(a.z, scalar)
+        };
+    }
+
+    static function addFQ6(FQ6 a, FQ6 b) : FQ6 {
+        return {
+            addFQ2(a.x, b.x),
+            addFQ2(a.y, b.y),
+            addFQ2(a.z, b.z)
+        };
+    }
+
+    static function subFQ6(FQ6 a, FQ6 b) : FQ6 {
+        return {
+            subFQ2(a.x, b.x),
+            subFQ2(a.y, b.y),
+            subFQ2(a.z, b.z)
+        };
+    }
+
+    static function negFQ6(FQ6 a) : FQ6 {
+        return {
+            negFQ2(a.x),
+            negFQ2(a.y),
+            negFQ2(a.z)
+        };
+    }
+
+    static function squareFQ6(FQ6 a) : FQ6 {
+        FQ2 v0 = squareFQ2(a.z);
+        FQ2 v1 = squareFQ2(a.y);
+        FQ2 v2 = squareFQ2(a.x);
+
+        FQ2 c0 = addFQ2(a.x, a.y);
+        c0 = squareFQ2(c0);
+        c0 = subFQ2(c0, v1);
+        c0 = subFQ2(c0, v2);
+        c0 = mulXiFQ2(c0);
+        c0 = addFQ2(c0, v0);
+
+        FQ2 c1 = addFQ2(a.y, a.z);
+        c1 = squareFQ2(c1);
+        c1 = subFQ2(c1, v0);
+        c1 = subFQ2(c1, v1);
+        FQ2 xiV2 = mulXiFQ2(v2);
+        c1 = addFQ2(c1, xiV2);
+
+        FQ2 c2 = addFQ2(a.x, a.z);
+        c2 = squareFQ2(c2);
+        c2 = subFQ2(c2, v0);
+        c2 = addFQ2(c2, v1);
+        c2 = subFQ2(c2, v2);
+
+        return {c2, c1, c0};
     }
 
     // ----------------------------------------------------
@@ -394,6 +510,33 @@ library BN256 {
 
         return res;
     }
+
+    static function makeAffineTwistPoint(TwistPoint a) : TwistPoint {
+        TwistPoint res = a; 
+        if (a.z != [0, 1]) {
+            if (a.z == [0, 0]) {
+                res = {
+                    [0, 0],
+                    [0, 1],
+                    [0, 0],
+                    [0, 0]
+                };
+            } else {
+                FQ2 zInv = inverseFQ2(a.z);
+                FQ2 t = mulFQ2(a.y, zInv);
+                FQ2 zInv2 = squareFQ2(zInv);
+                res.y = mulFQ2(t, zInv2);
+                t = mulFQ2(a.x, zInv2);
+                res.x = t;
+                res.z = [0, 1];
+                res.t = [0, 1];
+            }
+        }
+
+        return res;
+    }
+
+    // ----------------------------------------------------
 
 }
 

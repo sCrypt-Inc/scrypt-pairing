@@ -1,0 +1,32 @@
+import "bn256.scrypt";
+
+
+library BN256Pairing {
+
+    static function miller(TwistPoint q, CurvePoint p) : FQ12Point {
+        FQ12Point ret = {
+            {[0, 0], [0, 0], [0, 0]},
+            {[0, 0], [0, 0], [0, 1]}
+        };
+
+        TwistPoint aAffine = BN256.makeAffine(q);
+
+        return ret;
+    }
+
+    static function pair(CurvePoint g1, TwistPoint g2) : FQ12Point {
+        FQ12Point e = miller(g2, g1);
+
+        return e;
+    //e := miller(g2, g1, pool)
+    //ret := finalExponentiation(e, pool)
+    //e.Put(pool)
+
+    //if a.IsInfinity() || b.IsInfinity() {
+    //    ret.SetOne()
+    //}
+    //return ret
+    }
+
+}
+
