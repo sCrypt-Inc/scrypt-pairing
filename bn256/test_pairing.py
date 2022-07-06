@@ -18,9 +18,6 @@ if __name__ == '__main__':
     #    desc = json.load(f)
 
     type_classes = build_type_classes(desc)
-    CurvePoint = type_classes['CurvePoint']
-    TwistPoint = type_classes['TwistPoint']
-    FQ12Point = type_classes['FQ12Point']
 
     BN256PairingTest = build_contract_class(desc)
     bn256_pairing_test = BN256PairingTest()

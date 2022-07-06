@@ -27,6 +27,30 @@ contract BN256CurveTest {
         require(BN256.squareFQ6(a) == res);
     }
 
+    public function testInverseFQ12(FQ12 a, FQ12 res) {
+        require(BN256.inverseFQ12(a) == res);
+    }
+
+    public function testSquareFQ12(FQ12 a, FQ12 res) {
+        require(BN256.squareFQ12(a) == res);
+    }
+
+    public function testExpFQ12(FQ12 a, int exp, FQ12 res) {
+        require(BN256.expFQ12(a, exp) == res);
+    }
+
+    public function testFrobeniusFQ12(FQ12 a, FQ12 res) {
+        require(BN256.frobeniusFQ12(a) == res);
+    }
+
+    public function testFrobeniusP2FQ12(FQ12 a, FQ12 res) {
+        require(BN256.frobeniusP2FQ12(a) == res);
+    }
+
+    public function testMulFQ12(FQ12 a, FQ12 b, FQ12 res) {
+        require(BN256.mulFQ12(a, b) == res);
+    }
+
     public function testDoubleCurvePoint(CurvePoint a, CurvePoint res) {
         require(BN256.doubleCurvePoint(a) == res);
     }
