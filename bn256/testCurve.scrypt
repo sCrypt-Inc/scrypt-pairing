@@ -35,8 +35,8 @@ contract BN256CurveTest {
         require(BN256.squareFQ12(a) == res);
     }
 
-    public function testExpFQ12(FQ12 a, int exp, FQ12 res) {
-        require(BN256.expFQ12(a, exp) == res);
+    public function testExpFQ12_u(FQ12 a, FQ12 res) {
+        require(BN256.expFQ12_u(a) == res);
     }
 
     public function testFrobeniusFQ12(FQ12 a, FQ12 res) {

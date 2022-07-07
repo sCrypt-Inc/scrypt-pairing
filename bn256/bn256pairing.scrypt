@@ -9,14 +9,14 @@ library BN256Pairing {
             {[0, 0], [0, 0], [0, 1]}
         };
 
-        TwistPoint aAffine = BN256.makeAffine(q);
+        TwistPoint aAffine = BN256.makeAffineTwistPoint(q);
 
         return ret;
     }
 
     static function finalExponentiation(FQ12 in) : FQ12 {
         FQ12 t1 = {
-            BN256.negateFQ6(in.x),
+            BN256.negFQ6(in.x),
             in.y
         }; 
 
@@ -30,49 +30,42 @@ library BN256Pairing {
         FQ12 fp2 = BN256.frobeniusP2FQ12(t1);
         FQ12 fp3 = BN256.frobeniusFQ12(fp2);
 
-        FQ12 fu = exp
+        FQ12 fu = BN256.expFQ12_u(t1);
+        FQ12 fu2 = BN256.expFQ12_u(fu);
+        FQ12 fu3 = BN256.expFQ12_u(fu2);
 
+        FQ12 y3 = BN256.frobeniusFQ12(fu);
+        FQ12 fu2p = BN256.frobeniusFQ12(fu2);
+        FQ12 fu3p = BN256.frobeniusFQ12(fu3);
+        FQ12 y2 = BN256.frobeniusP2FQ12(fu2);
 
-    //fu, fu2, fu3 := newGFp12(pool), newGFp12(pool), newGFp12(pool)
-    //fu.Exp(t1, u, pool)
-    //fu2.Exp(fu, u, pool)
-    //fu3.Exp(fu2, u, pool)
+        FQ12 y0 = BN256.mulFQ12(fp, fp2);
+        y0 = BN256.mulFQ12(y0, fp3);
 
-    //y3 := newGFp12(pool).Frobenius(fu, pool)
-    //fu2p := newGFp12(pool).Frobenius(fu2, pool)
-    //fu3p := newGFp12(pool).Frobenius(fu3, pool)
-    //y2 := newGFp12(pool).FrobeniusP2(fu2, pool)
+        FQ12 y1 = BN256.conjugateFQ12(t1);
+        FQ12 y5 = BN256.conjugateFQ12(fu2);
+        y3 = BN256.conjugateFQ12(y3);
+        FQ12 y4 = BN256.mulFQ12(fu ,fu2p);
+        y4 = BN256.conjugateFQ12(y4);
 
-    //y0 := newGFp12(pool)
-    //y0.Mul(fp, fp2, pool)
-    //y0.Mul(y0, fp3, pool)
+        FQ12 y6 = BN256.mulFQ12(fu3, fu3p);
+        y6 = BN256.conjugateFQ12(y6);
 
-    //y1, y4, y5 := newGFp12(pool), newGFp12(pool), newGFp12(pool)
-    //y1.Conjugate(t1)
-    //y5.Conjugate(fu2)
-    //y3.Conjugate(y3)
-    //y4.Mul(fu, fu2p, pool)
-    //y4.Conjugate(y4)
+        FQ12 t0 = BN256.squareFQ12(y6);
+        t0 = BN256.mulFQ12(t0, y4);
+        t0 = BN256.mulFQ12(t0, y5);
+        t1 = BN256.mulFQ12(y3, y5);
+        t1 = BN256.mulFQ12(t1, t0);
+        t0 = BN256.mulFQ12(t0, y2);
+        t1 = BN256.squareFQ12(t1);
+        t1 = BN256.mulFQ12(t1, t0);
+        t1 = BN256.squareFQ12(t1);
+        t0 = BN256.mulFQ12(t1, y1);
+        t1 = BN256.mulFQ12(t1, y0);
+        t0 = BN256.squareFQ12(t0);
+        t0 = BN256.mulFQ12(t0, t1);
 
-    //y6 := newGFp12(pool)
-    //y6.Mul(fu3, fu3p, pool)
-    //y6.Conjugate(y6)
-
-    //t0 := newGFp12(pool)
-    //t0.Square(y6, pool)
-    //t0.Mul(t0, y4, pool)
-    //t0.Mul(t0, y5, pool)
-    //t1.Mul(y3, y5, pool)
-    //t1.Mul(t1, t0, pool)
-    //t0.Mul(t0, y2, pool)
-    //t1.Square(t1, pool)
-    //t1.Mul(t1, t0, pool)
-    //t1.Square(t1, pool)
-    //t0.Mul(t1, y1, pool)
-    //t1.Mul(t1, y0, pool)
-    //t0.Square(t0, pool)
-    //t0.Mul(t0, t1, pool)
-
+        return t0;
     }
 
     static function pair(CurvePoint g1, TwistPoint g2) : FQ12 {
