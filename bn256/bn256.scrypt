@@ -70,6 +70,12 @@ library BN256 {
         2581911344467009335267311115468803099551665605076196740867805258568234346338
     ];
 
+    // xiToPMinus1Over2 is ξ^((p-1)/2) where ξ = i+9.
+    static const FQ2 xiToPMinus1Over2 = [
+        3505843767911556378687030309984248845540243509899259641013678093033130930403,
+        2821565182194536844548159561693502659359617185244120367078079554186484126554
+    ];
+
     // xiToPMinus1Over3 is ξ^((p-1)/3) where ξ = i+9.
     static const FQ2 xiToPMinus1Over3 = [
         10307601595873709700152284273816112264069230130616436755625194854815875713954,
@@ -739,6 +745,28 @@ library BN256 {
         return q;
     }
 
+    static function makeAffineCurvePoint(CurvePoint a) : CurvePoint {
+        // MakeAffine converts a to affine form. If c is ∞, then it sets
+        // a to 0 : 1 : 0.
+
+        CurvePoint res = a;
+        if (a.z != 1) {
+            if (a.z == 0) {
+                res = {0, 1, 0, 0};
+            } else {
+                FQ zInv = modInverseEGCD(a.z, P);
+                FQ t = modReduce(a.y * zInv, P);
+                FQ zInv2 = modReduce(zInv * zInv, P);
+                FQ ay = modReduce(t * zInv2, P);
+                FQ ax = modReduce(a.y * zInv2, P);
+                
+                res = {ax, ay, 1, 1};
+            }
+        }
+
+        return res;
+    }
+
     // ----------------------------------------------------
 
     static function doubleTwistPoint(TwistPoint a) : TwistPoint {
@@ -877,6 +905,15 @@ library BN256 {
         }
 
         return res;
+    }
+
+    static function negTwistPoint(TwistPoint a) : TwistPoint {
+        return {
+            a.x,
+            subFQ2([0, 0], a.y),
+            a.z,
+            [0, 0]
+        };
     }
 
     // ----------------------------------------------------
