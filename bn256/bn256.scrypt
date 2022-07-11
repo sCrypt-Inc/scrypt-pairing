@@ -758,7 +758,7 @@ library BN256 {
                 FQ t = modReduce(a.y * zInv, P);
                 FQ zInv2 = modReduce(zInv * zInv, P);
                 FQ ay = modReduce(t * zInv2, P);
-                FQ ax = modReduce(a.y * zInv2, P);
+                FQ ax = modReduce(a.x * zInv2, P);
                 
                 res = {ax, ay, 1, 1};
             }
