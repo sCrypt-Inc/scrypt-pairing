@@ -1,5 +1,3 @@
-// TODO: Make as few variable balue reasignments as possible.
-
 type FQ = int;
 type FQ2 = int[2];
 
@@ -590,7 +588,6 @@ library BN256 {
         };
         FQ12 t = sum;
 
-        // TODO: limits to size of exponent?
         bytes mb = reverseBytes(num2bin(power, S), S);
 
         bool firstOne = false;
