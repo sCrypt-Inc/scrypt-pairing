@@ -7,6 +7,10 @@ from scryptlib import (
         )
 
 
+# Values from Google's implementation are taken as ground truth to compare against.
+# https://github.com/ethereum/go-ethereum/tree/master/crypto/bn256/google
+
+
 contract = 'testCurve.scrypt' 
 
 compiler_result = compile_contract(contract, debug=False)

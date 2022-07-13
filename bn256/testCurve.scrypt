@@ -15,10 +15,6 @@ contract BN256CurveTest {
         require(BN256.inverseFQ2(a) == res);
     }
 
-    public function testExpFQ(FQ a, int e, FQ res) {
-        require(BN256.expFQ(a, e) == res);
-    }
-
     public function testMulFQ6(FQ6 a, FQ6 b, FQ6 res) {
         require(BN256.mulFQ6(a, b) == res);
     }
