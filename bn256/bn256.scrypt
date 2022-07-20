@@ -36,6 +36,7 @@ library BN256 {
 
     // Curve bits:
     static const int CURVE_BITS = 256; 
+    static const int CURVE_BITS_P8 = 264; // +8 bits
 
     // Key int size:
     static const int S = 33;    // 32 bytes plus sign byte
@@ -600,7 +601,7 @@ library BN256 {
 
     static function doubleCurvePoint(CurvePoint a) : CurvePoint {
         // See http://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-0/doubling/dbl-2009-l.op3
-        CurvePoint res = {0, 0, 0, a.t};
+        CurvePoint res = {0, 0, 0, 0};
 
         int A = modReduce(a.x * a.x, P);
         int B = modReduce(a.y * a.y, P);
@@ -626,14 +627,21 @@ library BN256 {
         t2 = modReduce(e * res.y, P);
         res.y = t2 - t;
 
-        res.z = modReduce(res.y * a.z, P) * 2;
+        //int prod = res.y * a.z;
+        //if (a.t != 0) {
+        //    prod = a.y * a.z;
+        //}
+        //res.z = modReduce(prod, P) * 2;
+
+        int prod = a.y * a.z;
+        res.z = modReduce(prod, P) * 2;
 
         return res;
     }
 
     static function addCurvePoints(CurvePoint a, CurvePoint b) : CurvePoint {
         // See http://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-0/addition/add-2007-bl.op3
-        CurvePoint res = {0, 0, 0, a.t};
+        CurvePoint res = {0, 0, 0, 0};
         
         if (a.z == 0) {
             res = b;
@@ -713,19 +721,42 @@ library BN256 {
     static function mulCurvePoint(CurvePoint a, int m) : CurvePoint {
         // Double and add method.
         // Lowest bit to highest.
-        CurvePoint q = {0, 0, 0, 0};
+        CurvePoint t =   {0, 0, 0, 0};
+        CurvePoint sum = {0, 0, 0, 0};
 
-        bytes mb =   reverseBytes(num2bin(m, S), S);
+        bytes mb = reverseBytes(num2bin(m, S), S);
+        require(mb == b'00000000000000000000000000000000000000000000000000000000000001bba1');
+        bool firstOne = false;
 
-        loop (CURVE_BITS) : i {
-            if ((mb & (mask << i)) != zero) {
-                q = addCurvePoints(q, a);
+        //loop (CURVE_BITS_P8) : i {
+        //    if (i == CURVE_BITS_P8 - 1) {
+        //        require((mb & (mask << ((CURVE_BITS_P8 - 1) - i))) != zero);
+        //    }
+        //    if (i == CURVE_BITS_P8 - 6) {
+        //        require((mb & (mask << (CURVE_BITS_P8 - 1 - i))) != zero);
+        //    }
+        //    if ((mb & (mask << (CURVE_BITS - 1 + i))) != zero) {
+        //        firstOne = true;
+        //    } else {
+        //        sum = t;
+        //    }
+        //}
+
+        loop (CURVE_BITS_P8) : i {
+            if (firstOne) {
+                t = doubleCurvePoint(sum);
             }
 
-            a = doubleCurvePoint(a);
+            if ((mb & (mask << ((CURVE_BITS_P8 - 1) - i))) != zero) {
+                firstOne = true;
+                sum = addCurvePoints(t, a);
+            } else {
+                sum = t;
+            }
         }
 
-        return q;
+
+        return sum;
     }
 
     static function makeAffineCurvePoint(CurvePoint a) : CurvePoint {
@@ -754,7 +785,7 @@ library BN256 {
 
     static function doubleTwistPoint(TwistPoint a) : TwistPoint {
         // See http://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-0/doubling/dbl-2009-l.op3
-        TwistPoint res = {{0, 0}, {0, 0}, {0, 0}, a.t};
+        TwistPoint res = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
         FQ2 A = squareFQ2(a.x);
         FQ2 B = squareFQ2(a.y);
@@ -780,7 +811,7 @@ library BN256 {
         t2 = mulFQ2(e, res.y);
         res.y = subFQ2(t2, t);
 
-        res.z = mulScalarFQ2(mulFQ2(res.y, a.z), 2);
+        res.z = mulScalarFQ2(mulFQ2(a.y, a.z), 2);
 
         return res;
     }
