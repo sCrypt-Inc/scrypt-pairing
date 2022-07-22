@@ -783,6 +783,15 @@ library BN256 {
         return res;
     }
 
+    static function negCurvePoint(CurvePoint a) : CurvePoint {
+        return {
+            a.x,
+            -a.y,
+            a.z,
+            0
+        };
+    }
+
     // ----------------------------------------------------
 
     static function doubleTwistPoint(TwistPoint a) : TwistPoint {

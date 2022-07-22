@@ -1,3 +1,4 @@
+import "bn256.scrypt";
 import "bn256pairing.scrypt";
 
 
@@ -21,6 +22,10 @@ contract BN256PairingTest {
 
     public function testFinalExp(FQ12 a, FQ12 res) {
         require(BN256Pairing.finalExponentiation(a) == res);
+    }
+
+    public function testPair(CurvePoint g1, TwistPoint g2, FQ12 res) {
+        require(BN256Pairing.pair(g1, g2) == res); 
     }
 
 }

@@ -13,7 +13,7 @@ from scryptlib import (
 
 contract = 'testCurve.scrypt' 
 
-compiler_result = compile_contract(contract, debug=False)
+compiler_result = compile_contract(contract, debug=True)
 desc = compiler_result.to_desc()
 
 # Load desc instead:
