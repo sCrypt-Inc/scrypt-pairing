@@ -147,4 +147,3 @@ def test_verify_0():
         vk
     ).verify()        
             
-            

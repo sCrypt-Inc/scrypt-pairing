@@ -1,0 +1,12 @@
+import "zksnark.scrypt";
+
+
+contract ZKSNARKTest {
+
+    VerifyingKey vk;
+    
+    public function unlock(int[1] inputs, Proof proof) {
+        require(ZKSNARK.verify(inputs, proof, this.vk));
+    }
+
+}
