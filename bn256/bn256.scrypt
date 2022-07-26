@@ -27,12 +27,12 @@ struct TwistPoint {
 
 // These two are just to make it easier for users to interface with the code
 // by not having them to deal with z and t coords.
-struct CoordsCurvePoint {
+struct G1Point {
     FQ x;
     FQ y;
 }
 
-struct CoordsTwistPoint {
+struct G2Point {
     FQ2 x;
     FQ2 y;
 }
@@ -813,11 +813,11 @@ library BN256 {
         return a.z == 0;
     }
 
-    static function createCurvePoint(CoordsCurvePoint ccp) : CurvePoint {
+    static function createCurvePoint(G1Point ccp) : CurvePoint {
         return {ccp.x, ccp.y, 1, 1}; 
     }
 
-    static function getCoordsCurvePoint(CurvePoint cp) : CoordsCurvePoint {
+    static function getG1Point(CurvePoint cp) : G1Point {
         CurvePoint acp = makeAffineCurvePoint(cp);
         return {acp.x, acp.y};
     }
@@ -999,11 +999,11 @@ library BN256 {
         return a.z == FQ2Zero;
     }
 
-    static function createTwistPoint(CoordsTwistPoint ctp) : TwistPoint {
+    static function createTwistPoint(G2Point ctp) : TwistPoint {
         return {ctp.x, ctp.y, {0, 1}, {0, 1}}; 
     }
 
-    static function getCoordsTwistPoint(TwistPoint tp) : CoordsTwistPoint {
+    static function getG2Point(TwistPoint tp) : G2Point {
         TwistPoint atp = makeAffineTwistPoint(tp);
         return {atp.x, atp.y};
     }

@@ -695,7 +695,7 @@ library BN256Pairing {
         return t0;
     }
 
-    static function pair(CurvePoint g1, TwistPoint g2) : FQ12 {
+    static function pairInternal(CurvePoint g1, TwistPoint g2) : FQ12 {
         FQ12 e = miller(g2, g1);
         FQ12 ret = finalExponentiation(e);
 
@@ -706,9 +706,7 @@ library BN256Pairing {
         return ret;
     }
 
-    // Check four pairs.
-    // e(a0, b0) * ... * e(a3, b3) == 1
-    static function pairCheckP4(
+    static function pairCheckP4Internal(
             CurvePoint a0, TwistPoint b0,
             CurvePoint a1, TwistPoint b1,
             CurvePoint a2, TwistPoint b2,
@@ -737,6 +735,29 @@ library BN256Pairing {
 
         return acc == BN256.FQ12One;
     }
+
+    static function pair(G1Point g1, G2Point g2) : FQ12 {
+        return pairInternal(
+                BN256.createCurvePoint(g1), 
+                BN256.createTwistPoint(g2)
+            );
+    }
+
+    // Check four pairs.
+    // e(a0, b0) * ... * e(a3, b3) == 1
+    static function pairCheckP4(
+            G1Point a0, G2Point b0,
+            G1Point a1, G2Point b1,
+            G1Point a2, G2Point b2,
+            G1Point a3, G2Point b3) : bool {
+        return pairCheckP4Internal(
+                BN256.createCurvePoint(a0), BN256.createTwistPoint(b0),
+                BN256.createCurvePoint(a1), BN256.createTwistPoint(b1),
+                BN256.createCurvePoint(a2), BN256.createTwistPoint(b2),
+                BN256.createCurvePoint(a3), BN256.createTwistPoint(b3)
+            );
+    }
+            
 
 }
 
