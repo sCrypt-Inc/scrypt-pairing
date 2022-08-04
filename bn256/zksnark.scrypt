@@ -23,6 +23,8 @@ library ZKSNARK {
     static const int N_1 = N + 1;
 
     static function verify(int[N] inputs, Proof proof, VerifyingKey vk) : bool {
+        
+
         G1Point vk_x = vk.gamma_abc[0];
 
         loop (N) : i {
