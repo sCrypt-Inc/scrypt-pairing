@@ -106,7 +106,7 @@ def test_verify_0():
         vk
     ).verify()        
 
-    # Also test optimized version with precalculated vk.alpha * vk.beta. # TODO: change millera1b1 vals
+    # Also test optimized version with precalculated vk.alpha * vk.beta.
     millera1b1 = FQ12({
         'x': FQ6({
             'x': FQ2({
@@ -145,3 +145,103 @@ def test_verify_0():
         millera1b1
     ).verify()        
             
+
+# Testi with 5 public inputs. Requires change of N constant.
+#def test_verify_1():
+#    proof = Proof({
+#        'a': G1Point({
+#            'x': 0x2cd28f7e33cad0b4732ce6e26b3cf6c2dc3fa30bfa852cf4b586937a6ec51d13,
+#            'y': 0x2e5847f9f341151bed6b6c2de73f554d2e734e301f7e1e396e2623f395f75afc
+#            }),
+#        'b': G2Point({
+#                'x': FQ2({
+#                    'x': 0x037e54b9e256f3589540cd64e3bcbe855ad0badfeb51772b81a992bccd34eba9,
+#                    'y': 0x278f2d720fe90ca180f2796177bd4a90a9d698b21afab3483283f4e5d76c58bf,
+#                    }),
+#                'y': FQ2({
+#                    'x': 0x12bcb8c0eaac13ef344053977c6455b5518b61a0c1d078cb9bec8084a93e6dfd,
+#                    'y': 0x0724f53fb932fd88c01ae8c36cb7b959bffe28e9541c69d585799a5e82d791e7,
+#                    })
+#             }),
+#        'c': G1Point({
+#            'x': 0x00f934d287b223ffd205b6adfc0639b2280426108a2c5c048651cddb0d08746c,
+#            'y': 0x0f41e421c27aa85cf560839d03507a6f6b466d5c82ba1b14469f24acb9f16c8b
+#            })
+#    })
+#
+#    vk = VerifyingKey({
+#        'alpha': G1Point({
+#            'x': 0x21b0d8351269e5ea12146142f6558b94c19d79e91c17aab7c5c9ce54288a4e7d,
+#            'y': 0x2406404e3866cd186d27a48df6819f26c7cbf3025c0a3f5d6e5460ed542c2bf1
+#            }),
+#        'beta': G2Point({
+#                'x': FQ2({
+#                    'x': 0x2f393f33a801a29f68a35d823bc231100de216100e9031002f3a7d0bd35365b1,
+#                    'y': 0x230a787ae20988519aa4e8721b61b9369f0a26f76cb942cdfb72493f001b94cf,
+#                    }),
+#                'y': FQ2({
+#                    'x': 0x0f712e8fff65977d7c1eb398c7473051cf645e9cd087eb1b4865cf69cd2bcdb3,
+#                    'y': 0x09b356ac11216a3bcab42d5a9b451cf3d571f6699c0156ce8044e328fe1ff8b4,
+#                    })
+#             }),
+#        'gamma': G2Point({
+#                'x': FQ2({
+#                    'x': 0x2cbc13134030196435d750cbfd69f967f949f0d7dc78d82fd246f67a476a4d09,
+#                    'y': 0x0aca874766a4b276dac9a0c7e8383ef0c574ec3b9d1f4d0fbc8bf228345cce9c,
+#                    }),
+#                'y': FQ2({
+#                    'x': 0x0cc37dc9c60a4cd9f6fe4c571d3ee7f4129f54a8862a933cdcd8d917422c3621,
+#                    'y': 0x2d81f43fde136da5c72660b9149c5bff08057cac5056a33a696df849ea9ffb29,
+#                    })
+#             }),
+#        'delta': G2Point({
+#                'x': FQ2({
+#                    'x': 0x115ce77b63488bb23cd41ad0852a6af72bc128fe8fd01c1da57889db9fd1a9a6,
+#                    'y': 0x09fd82910143e0af49b0b4ac1c36bbd58309ef5c8b6ab761d55870e9264a9f9b,
+#                    }),
+#                'y': FQ2({
+#                    'x': 0x23cba54537e584bb472dc50d4d9a94da5d534b06a93a9149baeb6120bfa6e18a,
+#                    'y': 0x0cbfd2646fc48d763b19ca02fd4144b6feedf9d8c015f6a3e78cec7f404379c5,
+#                    })
+#             }),
+#        'gamma_abc': [
+#            G1Point({
+#                'x': 0x178baac7a43f2528b250f7e809d3fb261e8e67ca0342060dd62cba8d3d839073,
+#                'y': 0x1c914b1f67466782ef8a301a4a187121df366f091702278aa9bbfc5153cdbff9
+#            }),
+#            G1Point({
+#                'x': 0x0df23bc1a5c855a97d4c48092d63eb1f157b0e728becf4c3cce9dbe7da7efd05,
+#                'y': 0x269c824014476cc4d04a48e501efa96c35dc1824433a9ba512b4ae397f9b9567
+#            }),
+#            G1Point({
+#                'x': 0x076110a416a7034a85091bc87fab9bef7a42cdcc250a853c2ea6b5ceb0943eab,
+#                'y': 0x022c9681d5bcb6a8c40403bc2e6996838aee2e25b83c0fc314fab969314c0734
+#            }),
+#            G1Point({
+#                'x': 0x1b91debaddd8eeb8b1aa5038169dbdc4bc8be9aeeae248bb14f58fcc10456fd9,
+#                'y': 0x07983a7381aa9ec3afe42dfa9a2720d843b14b0502004e67c0d3d3e827bfe459
+#            }),
+#            G1Point({
+#                'x': 0x170d92322201e5b7b5ff86a89c1d3a746ce868e9b87399612c4ac6b953234f50,
+#                'y': 0x00408cf29c8412f19a6c6144fca3ae8eb47c18771640daadd406b66e0074b946
+#            }),
+#            G1Point({
+#                'x': 0x2592fd12b404668a1aac6a48ae8c9db944f7d6ecf5375969210beff97d459100,
+#                'y': 0x22f745fdbb492d90cecaab3374365d2570f684becee29eaabc25f8836c8de417
+#            })
+#        ]
+#    })
+#
+#    inputs = [
+#        0x00000000000000000000000000000000c31b30bf30a687cf96edaf12d74129ca,
+#        0x0000000000000000000000000000000021bd667bf2cf7723131c9fe26b9310c9,
+#        0x0000000000000000000000000000000000000000000000000000000000000000,
+#        0x0000000000000000000000000000000000000000000000000000000000000000,
+#        0x0000000000000000000000000000000000000000000000000000000000000000
+#    ]
+#
+#    assert zksnark_test.testVerify(
+#        inputs,
+#        proof,
+#        vk
+#    ).verify()        
