@@ -146,88 +146,88 @@ def test_verify_0():
     ).verify()        
             
 
-# Testi with 5 public inputs. Requires change of N constant.
+## Test with 5 public inputs. Requires change of N constant.
 #def test_verify_1():
 #    proof = Proof({
 #        'a': G1Point({
-#            'x': 0x2cd28f7e33cad0b4732ce6e26b3cf6c2dc3fa30bfa852cf4b586937a6ec51d13,
-#            'y': 0x2e5847f9f341151bed6b6c2de73f554d2e734e301f7e1e396e2623f395f75afc
+#            'x': 0x13f1c1f190244c3e793b73de546986db5c1a539db2c01393185f529e143d55df,
+#            'y': 0x26ac67b3c9f219dea45a889d4953d51f8c4da62bc4eca10642fe1de18c579fed
 #            }),
 #        'b': G2Point({
 #                'x': FQ2({
-#                    'x': 0x037e54b9e256f3589540cd64e3bcbe855ad0badfeb51772b81a992bccd34eba9,
-#                    'y': 0x278f2d720fe90ca180f2796177bd4a90a9d698b21afab3483283f4e5d76c58bf,
+#                    'x': 0x305b7ba549a66e6981ef0ba13db70972be6a684daafb981df474a635ccb973eb,
+#                    'y': 0x049fbaa822c160db11e85fc7152c6d0d92e83148e4d10806c5d0bc1122e0bc50,
 #                    }),
 #                'y': FQ2({
-#                    'x': 0x12bcb8c0eaac13ef344053977c6455b5518b61a0c1d078cb9bec8084a93e6dfd,
-#                    'y': 0x0724f53fb932fd88c01ae8c36cb7b959bffe28e9541c69d585799a5e82d791e7,
+#                    'x': 0x2d88f47c0a9ea7e617c9c3bd72455b2656441f6a939774b63bc88880b3751296,
+#                    'y': 0x15c7ebc85ea0d243dff26484187950f3147b742049dd88902b7a13a6d1dc6695,
 #                    })
 #             }),
 #        'c': G1Point({
-#            'x': 0x00f934d287b223ffd205b6adfc0639b2280426108a2c5c048651cddb0d08746c,
-#            'y': 0x0f41e421c27aa85cf560839d03507a6f6b466d5c82ba1b14469f24acb9f16c8b
+#            'x': 0x1bc5b5fae7427c05815cf73e810973be9e0582c2dc1d3d620af2c9896429b9bc,
+#            'y': 0x0a0981de2c4bf779ee6e5e2af6e1583b2171ec04b0513009a88272a6d6ccc843
 #            })
 #    })
 #
 #    vk = VerifyingKey({
 #        'alpha': G1Point({
-#            'x': 0x21b0d8351269e5ea12146142f6558b94c19d79e91c17aab7c5c9ce54288a4e7d,
-#            'y': 0x2406404e3866cd186d27a48df6819f26c7cbf3025c0a3f5d6e5460ed542c2bf1
+#            'x': 0x024f2cd7031962a62be2a9aca769ddfd32831f9357d0d2ce546f27d81803ad5b,
+#            'y': 0x224e2c11cdfc5f517342ef4c19ae42983abe1bdb363c54c5f00530f96528b197
 #            }),
 #        'beta': G2Point({
 #                'x': FQ2({
-#                    'x': 0x2f393f33a801a29f68a35d823bc231100de216100e9031002f3a7d0bd35365b1,
-#                    'y': 0x230a787ae20988519aa4e8721b61b9369f0a26f76cb942cdfb72493f001b94cf,
+#                    'x': 0x1d546ac9c456c5d85a376bf474503666f566bac49bff2b5a5eaef7ca0867db88,
+#                    'y': 0x0778478fb4d2b7823b88e5e51b6678a14091a0717fe29ba3af24f6a940335dcb,
 #                    }),
 #                'y': FQ2({
-#                    'x': 0x0f712e8fff65977d7c1eb398c7473051cf645e9cd087eb1b4865cf69cd2bcdb3,
-#                    'y': 0x09b356ac11216a3bcab42d5a9b451cf3d571f6699c0156ce8044e328fe1ff8b4,
+#                    'x': 0x21e45266443647602fb1e3c9e44290a4cb038a874918cbfcf79ac717873bcda2,
+#                    'y': 0x1fdaee2b44ddd1398281fb909dc3520da6e4c9672c89e471141d511d632155bd,
 #                    })
 #             }),
 #        'gamma': G2Point({
 #                'x': FQ2({
-#                    'x': 0x2cbc13134030196435d750cbfd69f967f949f0d7dc78d82fd246f67a476a4d09,
-#                    'y': 0x0aca874766a4b276dac9a0c7e8383ef0c574ec3b9d1f4d0fbc8bf228345cce9c,
+#                    'x': 0x108085958fc91caa5a2a15ea3787defcb526509a2b7bc286ff7de81035ab94cb,
+#                    'y': 0x12637282f71026cae75feb06da6750fb79e5ab97acab668d0ad17dc8c8496412,
 #                    }),
 #                'y': FQ2({
-#                    'x': 0x0cc37dc9c60a4cd9f6fe4c571d3ee7f4129f54a8862a933cdcd8d917422c3621,
-#                    'y': 0x2d81f43fde136da5c72660b9149c5bff08057cac5056a33a696df849ea9ffb29,
+#                    'x': 0x0676ebaf768e1cd5a19fa6cd90825ef5362125bab76969dfd432674655bd9129,
+#                    'y': 0x243cb58befa0ee6eee7df7bb0fe6d3492301b00b71d59c9b3e63481fd397c4fb,
 #                    })
 #             }),
 #        'delta': G2Point({
 #                'x': FQ2({
-#                    'x': 0x115ce77b63488bb23cd41ad0852a6af72bc128fe8fd01c1da57889db9fd1a9a6,
-#                    'y': 0x09fd82910143e0af49b0b4ac1c36bbd58309ef5c8b6ab761d55870e9264a9f9b,
+#                    'x': 0x1f48311e2f79fa10740b12524eb42b94b48fe6f06079eda61df90c2812639ab0,
+#                    'y': 0x00966b7a65b67acc01ae2be9e629040933bde186fe073c40a8a8c6312eb18154,
 #                    }),
 #                'y': FQ2({
-#                    'x': 0x23cba54537e584bb472dc50d4d9a94da5d534b06a93a9149baeb6120bfa6e18a,
-#                    'y': 0x0cbfd2646fc48d763b19ca02fd4144b6feedf9d8c015f6a3e78cec7f404379c5,
+#                    'x': 0x07f629196101bcda15fc2667724b648a00d352003f1f9a6e70b575a0fa756b17,
+#                    'y': 0x2b059a914c81a262f7d41dd2af5d727c6f1670acb808e43a46d4cfef5bd3328d,
 #                    })
 #             }),
 #        'gamma_abc': [
 #            G1Point({
-#                'x': 0x178baac7a43f2528b250f7e809d3fb261e8e67ca0342060dd62cba8d3d839073,
-#                'y': 0x1c914b1f67466782ef8a301a4a187121df366f091702278aa9bbfc5153cdbff9
+#                'x': 0x23ff064a9dc9d1b8831a02e1b4e9c44d892241ee4ae5b0d0a91a90183de3b62b,
+#                'y': 0x15d26829943a14d70f95df6712e712371c48ba80ab6afa9223cdc3c88d47ea10
 #            }),
 #            G1Point({
-#                'x': 0x0df23bc1a5c855a97d4c48092d63eb1f157b0e728becf4c3cce9dbe7da7efd05,
-#                'y': 0x269c824014476cc4d04a48e501efa96c35dc1824433a9ba512b4ae397f9b9567
+#                'x': 0x2b2959c6f6cca1afa7bbab5e5ec54359ae9aa18d36124e3b7abbe8c8b564d228,
+#                'y': 0x2f97e423a3da83f44d7508e0b45b22ce45932ba4767efb299db2e670cd0bfd69
 #            }),
 #            G1Point({
-#                'x': 0x076110a416a7034a85091bc87fab9bef7a42cdcc250a853c2ea6b5ceb0943eab,
-#                'y': 0x022c9681d5bcb6a8c40403bc2e6996838aee2e25b83c0fc314fab969314c0734
+#                'x': 0x273f49df2cc99cd8c79d9364d5ccece55f70ae36088eb4d328848846589609fb,
+#                'y': 0x0d7bf43b3489670e86a38befa8b6470bbfa24ea65bd33dece9543d1243385a07
 #            }),
 #            G1Point({
-#                'x': 0x1b91debaddd8eeb8b1aa5038169dbdc4bc8be9aeeae248bb14f58fcc10456fd9,
-#                'y': 0x07983a7381aa9ec3afe42dfa9a2720d843b14b0502004e67c0d3d3e827bfe459
+#                'x': 0x2df73536f8660b275d844c46f9a87121eb9bd61235a57d8ab21a848f1d5534d9,
+#                'y': 0x1675a1c7c7dcb858a989a6bba52717cf3b0c917efc5221067fa73c6f375e5dfb
 #            }),
 #            G1Point({
-#                'x': 0x170d92322201e5b7b5ff86a89c1d3a746ce868e9b87399612c4ac6b953234f50,
-#                'y': 0x00408cf29c8412f19a6c6144fca3ae8eb47c18771640daadd406b66e0074b946
+#                'x': 0x20685070ae9b183a0f4f4f84a1ac7f0ad0afd84e3ab2f6beb3bbea88b16fa283,
+#                'y': 0x2a8464859f7544e6eb9a66ea79aa720625d8eba2b26b40f12b87c7fb77d4f213
 #            }),
 #            G1Point({
-#                'x': 0x2592fd12b404668a1aac6a48ae8c9db944f7d6ecf5375969210beff97d459100,
-#                'y': 0x22f745fdbb492d90cecaab3374365d2570f684becee29eaabc25f8836c8de417
+#                'x': 0x0ac04264dddb512bd598271a50c7b766b36f749bcfdf2043456789ec6053eb61,
+#                'y': 0x2a940013402430d1ba36f1814b522403361cb8c84ba8a328036c6838ecb02c98
 #            })
 #        ]
 #    })

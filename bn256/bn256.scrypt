@@ -850,11 +850,7 @@ library BN256 {
     }
 
     static function createCurvePoint(G1Point ccp) : CurvePoint {
-        CurvePoint res = {0, 1, 0, 0};
-        if (ccp != {0, 1}) {
-            res = {ccp.x, ccp.y, 1, 1};
-        }
-        return res;
+        return ccp == {0, 1} ? {0, 1, 0, 0} : {ccp.x, ccp.y, 1, 1};
     }
 
     static function getG1Point(CurvePoint cp) : G1Point {
@@ -1067,11 +1063,11 @@ library BN256 {
 
     static function createTwistPoint(G2Point ctp) : TwistPoint {
         // Output x and y coords from ZoKrates need to be swaped to work correctly.
-        TwistPoint res = {FQ2Zero, FQ2One, FQ2Zero, FQ2Zero};
-        if (ctp != {FQ2Zero, FQ2One}) {
-            res = {{ctp.x.y, ctp.x.x}, {ctp.y.y, ctp.y.x}, FQ2One, FQ2One}; 
-        }
-        return res;
+        FQ2 x = {ctp.x.y, ctp.x.x};
+        FQ2 y = {ctp.y.y, ctp.y.x};
+        return ctp == {FQ2Zero, FQ2One} ? 
+                      {FQ2Zero, FQ2One, FQ2Zero, FQ2Zero} : 
+                      {x, y, FQ2One, FQ2One};
     }
 
     static function getG2Point(TwistPoint tp) : G2Point {
