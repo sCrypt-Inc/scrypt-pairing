@@ -9,12 +9,12 @@ from scryptlib import (
 
 contract = 'testZKSNARK.scrypt' 
 
-compiler_result = compile_contract(contract, debug=True)
-desc = compiler_result.to_desc()
+#compiler_result = compile_contract(contract, debug=True)
+#desc = compiler_result.to_desc()
 
-## Load desc instead:
-#with open('./out/testZKSNARK_desc.json', 'r') as f:
-#    desc = json.load(f)
+# Load desc instead:
+with open('./out/testZKSNARK_desc.json', 'r') as f:
+    desc = json.load(f)
 
 type_classes = build_type_classes(desc)
 G2Point = type_classes['G2Point']
@@ -245,3 +245,118 @@ def test_verify_0():
 #        proof,
 #        vk
 #    ).verify()        
+
+
+#def test_verify_rand_batch():
+#    import subprocess
+#
+#    os.chdir('zokrates/')
+#    
+#    for i in range(15):
+#        result = subprocess.run(['zokrates', 'compile', '-i', 'root.zok'])
+#        assert result.returncode == 0
+#
+#        result = subprocess.run(['zokrates', 'setup'])
+#        assert result.returncode == 0
+#
+#        result = subprocess.run(['zokrates', 'compute-witness', '-a', '337', '113569'])
+#        assert result.returncode == 0
+#
+#        result = subprocess.run(['zokrates', 'generate-proof'])
+#        assert result.returncode == 0
+#
+#        with open('verification.key', 'r') as f:
+#            vk_raw = json.load(f)
+#
+#        with open('proof.json', 'r') as f:
+#            proof_raw = json.load(f)
+#
+#        proof = Proof({
+#            'a': G1Point({
+#                'x': int.from_bytes(bytes.fromhex(proof_raw['proof']['a'][0][2:]), byteorder='big'),
+#                'y': int.from_bytes(bytes.fromhex(proof_raw['proof']['a'][1][2:]), byteorder='big'),
+#                }),
+#            'b': G2Point({
+#                    'x': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(proof_raw['proof']['b'][0][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(proof_raw['proof']['b'][0][1][2:]), byteorder='big'),
+#                        }),
+#                    'y': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(proof_raw['proof']['b'][1][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(proof_raw['proof']['b'][1][1][2:]), byteorder='big'),
+#                        })
+#                 }),
+#            'c': G1Point({
+#                'x': int.from_bytes(bytes.fromhex(proof_raw['proof']['c'][0][2:]), byteorder='big'),
+#                'y': int.from_bytes(bytes.fromhex(proof_raw['proof']['c'][1][2:]), byteorder='big'),
+#                })
+#        })
+#
+#        vk = VerifyingKey({
+#            'alpha': G1Point({
+#                'x': int.from_bytes(bytes.fromhex(vk_raw['alpha'][0][2:]), byteorder='big'),
+#                'y': int.from_bytes(bytes.fromhex(vk_raw['alpha'][1][2:]), byteorder='big'),
+#                }),
+#            'beta': G2Point({
+#                    'x': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(vk_raw['beta'][0][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(vk_raw['beta'][0][1][2:]), byteorder='big'),
+#                        }),
+#                    'y': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(vk_raw['beta'][1][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(vk_raw['beta'][1][1][2:]), byteorder='big'),
+#                        })
+#                 }),
+#            'gamma': G2Point({
+#                    'x': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(vk_raw['gamma'][0][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(vk_raw['gamma'][0][1][2:]), byteorder='big'),
+#                        }),
+#                    'y': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(vk_raw['gamma'][1][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(vk_raw['gamma'][1][1][2:]), byteorder='big'),
+#                        })
+#                 }),
+#            'delta': G2Point({
+#                    'x': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(vk_raw['delta'][0][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(vk_raw['delta'][0][1][2:]), byteorder='big'),
+#                        }),
+#                    'y': FQ2({
+#                        'x': int.from_bytes(bytes.fromhex(vk_raw['delta'][1][0][2:]), byteorder='big'),
+#                        'y': int.from_bytes(bytes.fromhex(vk_raw['delta'][1][1][2:]), byteorder='big'),
+#                        })
+#                 }),
+#            'gamma_abc': [
+#                G1Point({
+#                    'x': int.from_bytes(bytes.fromhex(vk_raw['gamma_abc'][0][0][2:]), byteorder='big'),
+#                    'y': int.from_bytes(bytes.fromhex(vk_raw['gamma_abc'][0][1][2:]), byteorder='big'),
+#                }),
+#                G1Point({
+#                    'x': int.from_bytes(bytes.fromhex(vk_raw['gamma_abc'][1][0][2:]), byteorder='big'),
+#                    'y': int.from_bytes(bytes.fromhex(vk_raw['gamma_abc'][1][1][2:]), byteorder='big'),
+#                })
+#            ]
+#        })
+#
+#        inputs = [0x000000000000000000000000000000000000000000000000000000000001bba1]
+#
+#        assert zksnark_test.testVerify(
+#            inputs,
+#            proof,
+#            vk
+#        ).verify()        
+#
+#    # Delte files generated by ZoKrates.
+#    os.remove('verification.key')
+#    os.remove('proof.json')
+#    os.remove('proving.key')
+#    os.remove('out')
+#    os.remove('out.r1cs')
+#    os.remove('out.wtns')
+#    os.remove('witness')
+#    os.remove('abi.json')
+#
+#    os.chdir('../')
+#
+#    
