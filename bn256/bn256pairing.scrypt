@@ -760,7 +760,7 @@ library BN256Pairing {
 
     static function pairCheckP4PrecalcInternal(
             CurvePoint a0, TwistPoint b0,
-    	    FQ12 millerBetaAlpha,
+            FQ12 millerBetaAlpha,
             CurvePoint a2, TwistPoint b2,
             CurvePoint a3, TwistPoint b3
             ) : bool {
@@ -803,4 +803,4 @@ library BN256Pairing {
     }
 
 }
-
+ 
