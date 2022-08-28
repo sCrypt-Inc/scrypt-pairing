@@ -11,13 +11,13 @@ from scryptlib import (
 
 contract = 'testZKSNARK.scrypt' 
 
-##compiler_result = compile_contract(contract, debug=False)
-#compiler_result = compile_contract(contract, debug=True)
-#desc = compiler_result.to_desc()
+#compiler_result = compile_contract(contract, debug=False)
+compiler_result = compile_contract(contract, debug=True)
+desc = compiler_result.to_desc()
 
 # Load desc instead:
-with open('./out/testZKSNARK_desc.json', 'r') as f:
-    desc = json.load(f)
+#with open('./out/testZKSNARK_desc.json', 'r') as f:
+#    desc = json.load(f)
 
 type_classes = build_type_classes(desc)
 G2Point = type_classes['G2Point']

@@ -52,8 +52,8 @@ library BN256 {
 
     // Key int size:
     static const int S = 33;    // 32 bytes plus sign byte
-    static const bytes mask = b'000000000000000000000000000000000000000000000000000000000000000001';
-    static const bytes zero = b'000000000000000000000000000000000000000000000000000000000000000000';
+    static const bytes mask = reverseBytes(num2bin(1, 33), 33);
+    static const bytes zero = reverseBytes(num2bin(0, 33), 33);
 
     // Generator of G1:
     static const CurvePoint G1 = {1, 2, 1, 1};
