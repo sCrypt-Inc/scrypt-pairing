@@ -970,6 +970,40 @@ library BN256 {
         return res;
     }
 
+    // static function mulG2Point(G2Point a, int n) : G2Point {
+    //     TwistPoint res = mulTwistPoint(
+    //             createTwistPoint(a),
+    //             n
+    //     );
+        
+    //     return getG2Point(res);
+    // }
+
+    // static function mulTwistPoint(TwistPoint a, int m) : TwistPoint {
+    //     // Double and add method.
+    //     // Lowest bit to highest.
+    //     TwistPoint t =   {FQ2Zero, FQ2Zero, FQ2Zero, FQ2Zero};
+    //     TwistPoint sum = {FQ2Zero, FQ2Zero, FQ2Zero, FQ2Zero};
+
+    //     bytes mb = reverseBytes(num2bin(m, S), S);
+    //     bool firstOne = false;
+
+    //     loop (CURVE_BITS_P8) : i {
+    //         if (firstOne) {
+    //             t = doubleTwistPoint(sum);
+    //         }
+
+    //         if ((mb & (mask << ((CURVE_BITS_P8 - 1) - i))) != zero) {
+    //             firstOne = true;
+    //             sum = addTwistPoints(t, a);
+    //         } else {
+    //             sum = t;
+    //         }
+    //     }
+
+    //     return sum;
+    // }
+
     static function makeAffineTwistPoint(TwistPoint a) : TwistPoint {
         TwistPoint res = a; 
         if (a.z != {0, 1}) {
